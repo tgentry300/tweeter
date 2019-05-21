@@ -25,5 +25,6 @@ urlpatterns = [
     path('createuser', views.create_user),
     path('newtweet', views.new_tweet),
     path('tweet/<int:tweet_id>', views.tweet_view),
-    path('logout', views.logout_view)
+    path('logout', views.logout_view),
+    path('notifications', views.notification_view)
 ]

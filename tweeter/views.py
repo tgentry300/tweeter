@@ -1,19 +1,23 @@
 from django.shortcuts import render, HttpResponseRedirect, reverse
-from .models import TweeterUser, Tweet
+from .models import TweeterUser, Tweet, Notification
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.admin.views.decorators import staff_member_required
 from .forms import LoginForm, CreateNewUserForm, NewTweetForm
-
+import re
 # def welcome(request, *args, **kwargs):
 #     return render(request, 'welcome.html')
 
 
 @login_required(login_url="/login")
 def home_page(request, *args, **kwargs):
-    tweets = Tweet.objects.all()
-    return render(request, 'home.html', {'tweets': tweets})
+    following_users = request.user.tweeteruser.following.all()
+    logged_in_tweets = Tweet.objects.filter(author=request.user.tweeteruser)
+    tweets = Tweet.objects.filter(author__in=following_users)
+
+    all_tweets = logged_in_tweets | tweets
+    all_tweets = all_tweets.order_by('-created_date')
+    return render(request, 'home.html', {'tweets': all_tweets})
 
 
 def login_view(request, *args, **kwargs):
@@ -96,7 +100,15 @@ def new_tweet(request, *args, **kwargs):
         form = NewTweetForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            Tweet.objects.create(body=data['new_tweet'], author=request.user.tweeteruser)
+            the_tweet = Tweet.objects.create(body=data['new_tweet'], author=request.user.tweeteruser)
+
+            tweet_body = data['new_tweet']
+            matches = re.findall(r'@(\w+)', tweet_body)
+
+            for match in matches:
+                matched_user = TweeterUser.objects.get(user__username=match)
+                Notification.objects.create(notified=matched_user, not_tweet=the_tweet)
+
             return HttpResponseRedirect(reverse('home'))
     else:
         form = NewTweetForm()
@@ -107,3 +119,13 @@ def new_tweet(request, *args, **kwargs):
 def logout_view(request, *args, **kwargs):
     logout(request)
     return render(request, 'logout.html')
+
+
+def notification_view(request):
+    if request.user.is_authenticated:
+        notif = Notification.objects.filter(notified=request.user.tweeteruser)
+
+        for notify in notif:
+            notify.delete()
+
+    return render(request, 'notification.html', {'notif': notif})

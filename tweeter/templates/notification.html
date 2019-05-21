@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    {% for notification in notif %}
+        <h3>{{ notification.not_tweet.author.user }} has tagged you</h3>
+        <p>{{ notification.not_tweet.body }}</p>
+    {% endfor %}
+</body>
+</html>
