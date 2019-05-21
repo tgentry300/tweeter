@@ -4,12 +4,14 @@ from django.contrib.auth.models import User
 
 
 class TweeterUser(models.Model):
+    name = models.TextField(max_length=30, default='no name provided')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    following = models.ManyToManyField('self', blank=True, symmetrical=False)
 
 
 class Tweet(models.Model):
     body = models.TextField(max_length=140)
-    username = models.OneToOneField(TweeterUser, on_delete=models.CASCADE)
+    author = models.ForeignKey(TweeterUser, on_delete=models.CASCADE)
     created_date = models.DateTimeField(default=now, editable=False)
 
 

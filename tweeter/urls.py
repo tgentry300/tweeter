@@ -19,10 +19,11 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home_page),
+    path('', views.home_page, name='home'),
     path('login', views.login_view),
-    path('userpage/<int:userid>', views.user_page),
+    path('userpage/<str:name>', views.user_page),
     path('createuser', views.create_user),
     path('newtweet', views.new_tweet),
-    path('tweet/<int:tweet_id>', views.tweet_view)
+    path('tweet/<int:tweet_id>', views.tweet_view),
+    path('logout', views.logout_view)
 ]

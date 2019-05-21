@@ -4,9 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Tweeter</title>
 </head>
 <body>
-    <h1>Welcome to Tweeter</h1>
+    <a href='/userpage/{{ request.user.tweeteruser.name }}'>My Profile</a>
+    <h1>Welcome to Tweeter, {{ user }}</h1>
+    <a href='/newtweet'>Write a new Tweet!</a>
+    <h2>Tweets</h2>
+    {% for tweet in tweets %}
+        <h3><a href='/userpage/{{ tweet.author.name }}'>{{ tweet.author.user }}</a></h3>
+        <p><a href='/tweet/{{ tweet.id }}'>{{ tweet.created_date }}</a></p>
+        <p>{{ tweet.body }}</p>
+    {% endfor %}
+    <a href='/logout'>Logout</a>
 </body>
 </html>
